@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coding Conf 2026 | Your Ticket</title>
+  <link rel="icon" href="assets/images/favicon-32x32.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-ticket">
+  <img class="deco deco-circle" src="assets/images/pattern-circle.svg" alt="" aria-hidden="true">
+  <img class="deco deco-top" src="assets/images/pattern-squiggly-line-top.svg" alt="" aria-hidden="true">
+  <img class="deco deco-bottom" src="assets/images/pattern-squiggly-line-bottom-desktop.svg" alt="" aria-hidden="true">
+
+  <header class="site-header">
+    <a href="index.html" aria-label="Coding Conf home">
+      <img src="assets/images/logo-full.svg" alt="Coding Conf logo" class="logo">
+    </a>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="ticket-title">
+      <h1 id="ticket-title">Congrats, <span class="gradient-text" id="ticket-name"></span>!
+        Your ticket is ready.</h1>
+      <p class="lead">We've emailed your ticket to
+        <span class="accent" id="ticket-email"></span>
+        and will send updates in the run up to the event.</p>
+    </section>
+
+    <section aria-label="Your conference ticket">
+      <article class="ticket">
+        <div class="ticket-main">
+          <div class="ticket-brand">
+            <img src="assets/images/logo-full.svg" alt="Coding Conf" class="ticket-logo">
+            <p class="ticket-meta"><time datetime="2026-10-26">Oct 26, 2026</time> / Papine, Kgn</p>
+          </div>
+          <div class="ticket-attendee">
+            <img id="ticket-avatar" class="ticket-avatar" alt="Your uploaded avatar">
+            <div>
+              <p class="ticket-attendee-name" id="ticket-fullname"></p>
+              <p class="ticket-github">
+                <img src="assets/images/icon-github.svg" alt="GitHub" class="github-icon">
+                <a id="ticket-github" href="#" target="_blank" rel="noopener noreferrer"></a>
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="ticket-serial" id="ticket-serial" aria-label="Ticket number"></p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p><a href="index.html">Back to home</a></p>
+  </footer>
+
+  <script src="js/ticket.js"></script>
+</body>
+</html>

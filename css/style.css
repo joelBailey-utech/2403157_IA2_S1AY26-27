@@ -1,0 +1,496 @@
+/* ==========================================================
+   Coding Conf - main stylesheet
+   Sections: 1 Variables | 2 Base | 3 Layout | 4 Components
+             5 Form | 6 Ticket | 7 Responsive | 8 Motion
+   ========================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;700;800&display=swap");
+
+/* ---------- 1. Custom properties ---------- */
+:root {
+  --neutral-0: hsl(0, 0%, 100%);
+  --neutral-300: hsl(252, 6%, 83%);
+  --neutral-500: hsl(245, 15%, 58%);
+  --neutral-700: hsl(245, 19%, 35%);
+  --neutral-900: hsl(248, 70%, 10%);
+  --orange-500: hsl(7, 88%, 67%);
+  --orange-700: hsl(7, 71%, 60%);
+
+  --font-main: "Inconsolata", monospace;
+
+  /* Fluid typography: scales between mobile and desktop */
+  --fs-h1: clamp(1.9rem, 1.2rem + 3.5vw, 3.5rem);
+  --fs-lead: clamp(1.1rem, 1rem + 0.6vw, 1.5rem);
+  --fs-label: 1.25rem;      /* 20px, from the style guide */
+  --fs-small: 0.9rem;
+
+  --radius: 0.75rem;
+  --transition: 0.25s ease;
+}
+
+/* ---------- 2. Base / reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-main);
+  font-size: 1.125rem;
+  color: var(--neutral-0);
+  background-color: var(--neutral-900);
+  background-image: url("../assets/images/background-mobile.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+/* Visible keyboard focus on every interactive element */
+:is(a, button, input):focus-visible {
+  outline: 3px solid var(--orange-500);
+  outline-offset: 3px;
+}
+
+/* ---------- 3. Layout ---------- */
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 2rem;
+  padding: 1.5rem 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  height: 2.25rem;
+  width: auto;
+}
+
+main {
+  flex: 1;
+  width: min(100% - 2rem, 60rem);
+  margin-inline: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero {
+  text-align: center;
+  padding-block: 1.5rem 2rem;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  color: var(--neutral-300);
+  position: relative;
+  z-index: 1;
+}
+
+/* Decorative background patterns sit behind content */
+.deco {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.deco-circle { top: 0; left: 0; width: 8rem; }
+.deco-top    { top: 4rem; right: 0; width: 8rem; }
+.deco-bottom { bottom: 0; left: 0; width: 12rem; }
+
+/* ---------- 4. Components ---------- */
+.nav-list {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-list a {
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--transition);
+}
+
+.nav-list a:is(:hover, :focus-visible) {
+  border-color: var(--orange-500);
+}
+
+h1 {
+  font-size: var(--fs-h1);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 1rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.lead {
+  font-size: var(--fs-lead);
+  color: var(--neutral-300);
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+}
+
+/* Gradient text for highlighted words */
+.gradient-text {
+  background: linear-gradient(to right, hsl(7, 86%, 67%), hsl(0, 0%, 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.accent {
+  color: var(--orange-500);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  font: inherit;
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--neutral-900);
+  background-color: var(--orange-500);
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform var(--transition), background-color var(--transition);
+}
+
+.btn:is(:hover, :focus-visible) {
+  background-color: var(--orange-700);
+  transform: translateY(-3px);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin-block: 1rem 2rem;
+}
+
+.info-card {
+  padding: 1.25rem;
+  text-align: center;
+  background: hsl(0 0% 100% / 0.08);
+  border: 1px solid hsl(0 0% 100% / 0.25);
+  border-radius: var(--radius);
+  transition: transform var(--transition);
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+}
+
+.info-card p {
+  margin: 0;
+  color: var(--neutral-300);
+}
+
+.about {
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+.about-list {
+  display: inline-block;
+  text-align: left;
+  color: var(--neutral-300);
+  line-height: 1.8;
+}
+
+/* ---------- 5. Form ---------- */
+.form {
+  width: min(100%, 26rem);
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-size: var(--fs-label);
+}
+
+.form input[type="text"] {
+  padding: 0.85rem 1rem;
+  font: inherit;
+  color: var(--neutral-0);
+  background: hsl(0 0% 100% / 0.1);
+  border: 1px solid var(--neutral-500);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.form input::placeholder {
+  color: var(--neutral-300);
+}
+
+.form input[type="text"]:is(:hover, :focus) {
+  background: hsl(0 0% 100% / 0.18);
+  border-color: var(--neutral-0);
+}
+
+/* Invalid state is set by JavaScript with aria-invalid */
+.form input[aria-invalid="true"] {
+  border-color: var(--orange-500);
+}
+
+/* Upload dropzone: the real file input covers the whole box */
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 8rem;
+  padding: 1rem;
+  text-align: center;
+  background: hsl(0 0% 100% / 0.1);
+  border: 2px dashed var(--neutral-500);
+  border-radius: var(--radius);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.dropzone:is(:hover, :focus-within) {
+  background: hsl(0 0% 100% / 0.18);
+  border-color: var(--neutral-0);
+}
+
+.dropzone:has(input:focus-visible) {
+  outline: 3px solid var(--orange-500);
+  outline-offset: 3px;
+}
+
+.dropzone:has(input[aria-invalid="true"]) {
+  border-color: var(--orange-500);
+}
+
+.dropzone input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dropzone-icon {
+  width: 3rem;
+  padding: 0.5rem;
+  background: hsl(0 0% 100% / 0.1);
+  border-radius: var(--radius);
+}
+
+.dropzone-preview {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.dropzone p {
+  margin: 0;
+}
+
+.hint,
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: var(--fs-small);
+}
+
+.hint {
+  color: var(--neutral-300);
+}
+
+.hint img {
+  width: 1rem;
+}
+
+.error {
+  color: var(--orange-500);
+}
+
+/* Hide the error row until JS fills it (:empty selector) */
+.error:empty {
+  display: none;
+}
+
+.error:not(:empty)::before {
+  content: "\26A0";
+}
+
+/* ---------- 6. Ticket (glassmorphism) ---------- */
+.ticket {
+  display: flex;
+  width: min(100%, 36rem);
+  margin: 1.5rem auto 3rem;
+  background: linear-gradient(135deg, hsl(0 0% 100% / 0.18), hsl(0 0% 100% / 0.05));
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid hsl(0 0% 100% / 0.8);
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 40px hsl(248 70% 5% / 0.5);
+  overflow: hidden;
+  animation: ticket-in 0.7s ease both;
+}
+
+.ticket-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem;
+  border-right: 2px dashed hsl(0 0% 100% / 0.4);
+}
+
+.ticket-logo {
+  height: 2rem;
+  width: auto;
+}
+
+.ticket-meta {
+  margin: 0.5rem 0 0 2.4rem;
+  font-size: var(--fs-small);
+  color: var(--neutral-300);
+}
+
+.ticket-attendee {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ticket-avatar {
+  width: 4.25rem;
+  height: 4.25rem;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.ticket-attendee-name {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.ticket-github {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--neutral-300);
+  overflow-wrap: anywhere;
+}
+
+.github-icon {
+  width: 1.1rem;
+}
+
+.ticket-serial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--neutral-500);
+  writing-mode: vertical-rl;
+}
+
+/* ---------- 7. Responsive ---------- */
+@media (min-width: 48rem) {
+  body {
+    background-image: url("../assets/images/background-tablet.png");
+  }
+
+  .deco-bottom {
+    width: 20rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  body {
+    background-image: url("../assets/images/background-desktop.png");
+  }
+
+  .deco-circle { width: 14rem; }
+  .deco-top    { width: 16rem; }
+  .deco-bottom { width: 30rem; }
+}
+
+@media (max-width: 30rem) {
+  .ticket {
+    flex-direction: column;
+  }
+
+  .ticket-main {
+    border-right: 0;
+    border-bottom: 2px dashed hsl(0 0% 100% / 0.4);
+  }
+
+  .ticket-serial {
+    width: auto;
+    padding: 0.75rem;
+    writing-mode: horizontal-tb;
+  }
+}
+
+/* ---------- 8. Motion ---------- */
+@keyframes ticket-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
