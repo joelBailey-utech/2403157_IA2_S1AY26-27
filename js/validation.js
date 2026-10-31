@@ -1,314 +1,206 @@
 /**
- * validation.js
- * Handles the registration form on login.html:
- * intercepts the submit event, validates every field, shows errors
- * in place, saves the valid data to localStorage and opens ticket.html.
+ * validation.js  (runs on login.html)
+ * Validates the registration form, saves the data to localStorage
+ * as JSON, then opens ticket.html.
+ *
+ * Course content used: Weeks 1-8 (variables, objects, arrays, loops,
+ * functions, DOM, event listeners, localStorage, JSON).
  */
 
-/*
- * validation.js
- * Handles the registration form on login.html.
- * Validates every field, displays error messages,
- * saves valid information and opens ticket.html.
- */
+var STORAGE_KEY = "codingConfTicket";
+var MAX_AVATAR_BYTES = 500 * 1024; // 500KB limit
+var ALLOWED_TYPES = ["image/jpeg", "image/png"];
+var GITHUB_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-";
+var FIELD_KEYS = ["avatar", "name", "email", "github"];
 
-const STORAGE_KEY = "codingConfTicket";
-const MAX_AVATAR_BYTES = 500 * 1024;
-const ALLOWED_TYPES = ["image/jpeg", "image/png"];
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const GITHUB_PATTERN = /^@[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/;
-
-
-// Get the registration form
-
-const form = document.getElementById("registration-form");
-
-
-// Get the form fields
-
-const fields = {
+var form = document.getElementById("registration-form");
+var fields = {
   avatar: document.getElementById("avatar"),
   name: document.getElementById("full-name"),
   email: document.getElementById("email"),
   github: document.getElementById("github")
 };
-
-
-// Get the error message areas
-
-const errors = {
+var errors = {
   avatar: document.getElementById("avatar-error"),
   name: document.getElementById("name-error"),
   email: document.getElementById("email-error"),
   github: document.getElementById("github-error")
 };
+var preview = document.getElementById("avatar-preview");
+var dropzoneIcon = document.getElementById("dropzone-icon");
+var dropzoneText = document.getElementById("dropzone-text");
 
 
-// Get avatar preview elements
-
-const preview = document.getElementById("avatar-preview");
-const dropzoneIcon = document.getElementById("dropzone-icon");
-const dropzoneText = document.getElementById("dropzone-text");
-
-
-// Display an error message under a field
+/* ---------- Error helpers ---------- */
 
 function setError(key, message) {
-
   errors[key].textContent = message;
-
   if (message !== "") {
-
     fields[key].setAttribute("aria-invalid", "true");
-
   } else {
-
     fields[key].removeAttribute("aria-invalid");
-
   }
-
 }
-
-
-// Clear all error messages
 
 function clearErrors() {
-
-  setError("avatar", "");
-  setError("name", "");
-  setError("email", "");
-  setError("github", "");
-
+  for (var i = 0; i < FIELD_KEYS.length; i++) {
+    setError(FIELD_KEYS[i], "");
+  }
 }
 
 
-// Validate the user's name
+/* ---------- Validation (return "" if OK, or an error message) ---------- */
 
 function validateName(value) {
-
   if (value.trim() === "") {
-
     return "Please enter your full name.";
-
   }
-
   return "";
-
 }
 
-
-// Validate the email address
-
+// Email: one @, text before it, and a dot with text after the @
 function validateEmail(value) {
+  var message = "Please enter a valid email address.";
+  var email = value.trim();
+  var atPos = email.indexOf("@");
+  var dotPos = email.lastIndexOf(".");
 
-  if (!EMAIL_PATTERN.test(value.trim())) {
-
-    return "Please enter a valid email address.";
-
+  if (email === "" || email.indexOf(" ") !== -1) {
+    return message;
   }
-
+  if (atPos < 1 || email.indexOf("@", atPos + 1) !== -1) {
+    return message;
+  }
+  if (dotPos < atPos + 2 || dotPos === email.length - 1) {
+    return message;
+  }
   return "";
-
 }
 
-
-// Validate the GitHub username
-
+// GitHub: starts with @, then 1-39 letters, numbers or hyphens
 function validateGithub(value) {
+  var message = "Please enter a valid GitHub username starting with @.";
+  var handle = value.trim();
 
-  if (!GITHUB_PATTERN.test(value.trim())) {
-
-    return "Please enter a valid GitHub username starting with @.";
-
+  if (handle.charAt(0) !== "@" || handle.length < 2 || handle.length > 40) {
+    return message;
   }
-
+  if (handle.charAt(1) === "-") {
+    return message;
+  }
+  for (var i = 1; i < handle.length; i++) {
+    if (GITHUB_CHARS.indexOf(handle.charAt(i)) === -1) {
+      return message;
+    }
+  }
   return "";
-
 }
 
-
-// Validate the uploaded avatar
-
+// Avatar: must exist, be JPG/PNG and be under 500KB
 function validateAvatar(file) {
-
   if (!file) {
-
     return "Please upload an avatar photo.";
-
   }
-
-  if (!ALLOWED_TYPES.includes(file.type)) {
-
+  if (ALLOWED_TYPES.indexOf(file.type) === -1) {
     return "Invalid file type. Please upload a JPG or PNG image.";
-
   }
-
   if (file.size > MAX_AVATAR_BYTES) {
-
     return "File too large. Please upload a photo under 500KB.";
-
   }
-
   return "";
-
 }
 
 
-// Read the image using FileReader and a callback function
+/* ---------- Ticket helpers ---------- */
 
-function readFileAsDataURL(file, callback) {
-
-  const reader = new FileReader();
-
-  reader.onload = function () {
-
-    callback(reader.result);
-
-  };
-
-  reader.onerror = function () {
-
-    setError("avatar", "Could not read the image. Try another file.");
-
-  };
-
-  reader.readAsDataURL(file);
-
-}
-
-
-// Generate a ticket number
-
+// Build a ticket number such as #01609
 function generateSerial() {
+  var number = Math.floor(Math.random() * 99999) + 1;
+  var text = String(number);
+  while (text.length < 5) {
+    text = "0" + text;
+  }
+  return "#" + text;
+}
 
-  const number = Math.floor(Math.random() * 99999) + 1;
+// Save the ticket object as JSON text, then go to the ticket page
+function saveTicket(avatarData) {
+  var ticket = {
+    name: fields.name.value.trim(),
+    email: fields.email.value.trim(),
+    github: fields.github.value.trim(),
+    avatar: avatarData,
+    serial: generateSerial()
+  };
 
-  return "#" + String(number).padStart(5, "0");
-
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ticket));
+  window.location.href = "ticket.html";
 }
 
 
-// Display a preview when an avatar is selected
+/* ---------- Event listeners ---------- */
 
+// Preview the chosen avatar inside the dropzone
 fields.avatar.addEventListener("change", function () {
+  var file = fields.avatar.files[0];
+  var message = validateAvatar(file);
 
-  const file = fields.avatar.files[0];
-
-  const message = validateAvatar(file);
-
-  setError("avatar", file ? message : "");
+  if (file) {
+    setError("avatar", message);
+  } else {
+    setError("avatar", "");
+  }
 
   if (file && message === "") {
-
-    readFileAsDataURL(file, function (dataUrl) {
-
-      preview.src = dataUrl;
+    var reader = new FileReader();
+    reader.addEventListener("load", function () {
+      preview.src = reader.result;
       preview.hidden = false;
-
       dropzoneIcon.hidden = true;
       dropzoneText.textContent = file.name;
-
     });
-
+    reader.readAsDataURL(file);
   } else {
-
     preview.hidden = true;
     dropzoneIcon.hidden = false;
-
     dropzoneText.textContent = "Drag and drop or click to upload";
-
   }
-
 });
 
-
-// Validate and submit the registration form
-
+// Validate, save and redirect on submit
 form.addEventListener("submit", function (event) {
-
   event.preventDefault();
-
   clearErrors();
 
-  const file = fields.avatar.files[0];
-
-
-  // Check every field
-
-  const messages = {
-
+  var file = fields.avatar.files[0];
+  var messages = {
     avatar: validateAvatar(file),
     name: validateName(fields.name.value),
     email: validateEmail(fields.email.value),
     github: validateGithub(fields.github.value)
-
   };
 
-
-  // Display all error messages
-
-  let firstInvalid = null;
-
-  for (let key in messages) {
-
+  // Show every error, then focus the first invalid field
+  var firstInvalid = null;
+  for (var i = 0; i < FIELD_KEYS.length; i++) {
+    var key = FIELD_KEYS[i];
     setError(key, messages[key]);
-
     if (messages[key] !== "" && firstInvalid === null) {
-
       firstInvalid = fields[key];
-
     }
-
   }
-
-
-  // Stop if any field is invalid
-
   if (firstInvalid !== null) {
-
     firstInvalid.focus();
-
     return;
-
   }
 
-
-  // Read the avatar and save the registration details
-
-  readFileAsDataURL(file, function (avatarData) {
-
-    const ticket = {
-
-      name: fields.name.value.trim(),
-      email: fields.email.value.trim(),
-      github: fields.github.value.trim(),
-      avatar: avatarData,
-      serial: generateSerial()
-
-    };
-
-
-    // Save the information and open the ticket page
-
-    try {
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(ticket)
-      );
-
-      window.location.href = "ticket.html";
-
-    } catch (error) {
-
-      setError(
-        "avatar",
-        "Could not save your details. Try a smaller image."
-      );
-
-    }
-
+  // Valid: turn the image into text (data URL), then save and redirect
+  var reader = new FileReader();
+  reader.addEventListener("load", function () {
+    saveTicket(reader.result);
   });
-
+  reader.addEventListener("error", function () {
+    setError("avatar", "Could not read the image. Try another file.");
+  });
+  reader.readAsDataURL(file);
 });
