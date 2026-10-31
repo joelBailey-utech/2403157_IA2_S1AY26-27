@@ -1,110 +1,50 @@
-/**
- * ticket.js
- * Runs on ticket.html: reads the saved registration data from
- * localStorage and fills in the ticket. If no valid data exists the
- * visitor is sent back to index.html.
- */
 
-const STORAGE_KEY = "codingConfTicket";
 
 /**
- * Load the saved ticket object.
- * @returns {object|null} the ticket data, or null if missing/invalid
+ * ticket.js  (runs on ticket.html)
+ * Reads the saved JSON from localStorage and fills in the ticket.
+ * If there is no saved data, the visitor is sent back to login.html.
  */
 
-/*
- * ticket.js
- * Reads the saved registration information from localStorage
- * and displays the information on ticket.html.
- */
+var STORAGE_KEY = "codingConfTicket";
 
-const STORAGE_KEY = "codingConfTicket";
-
-
-/* Load the saved registration information */
-
+// Get the saved ticket object, or null if nothing is saved
 function loadTicket() {
+  var saved = localStorage.getItem(STORAGE_KEY);
 
-  try {
-
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (saved === null) {
-      return null;
-    }
-
-    const data = JSON.parse(saved);
-
-    if (
-      data &&
-      data.name &&
-      data.email &&
-      data.github &&
-      data.avatar
-    ) {
-
-      return data;
-
-    }
-
+  if (saved === null) {
     return null;
-
-  } catch (error) {
-
-    return null;
-
   }
 
+  var data = JSON.parse(saved); // JSON text -> object
+
+  if (data.name && data.email && data.github && data.avatar) {
+    return data;
+  }
+  return null;
 }
 
-
-/* Display the registration information on the ticket */
-
+// Put the saved values into the page
 function renderTicket(data) {
+  document.getElementById("ticket-name").textContent = data.name;
+  document.getElementById("ticket-fullname").textContent = data.name;
+  document.getElementById("ticket-email").textContent = data.email;
+  document.getElementById("ticket-serial").textContent = data.serial;
 
-  document.getElementById("ticket-name").textContent =
-    data.name;
-
-  document.getElementById("ticket-email").textContent =
-    data.email;
-
-  document.getElementById("ticket-fullname").textContent =
-    data.name;
-
-  document.getElementById("ticket-serial").textContent =
-    data.serial || "#00001";
-
-
-  // Display the avatar
-
-  const avatar = document.getElementById("ticket-avatar");
-
+  var avatar = document.getElementById("ticket-avatar");
   avatar.src = data.avatar;
   avatar.alt = "Avatar of " + data.name;
 
-
-  // Display the GitHub username
-
-  const github = document.getElementById("ticket-github");
-
+  var github = document.getElementById("ticket-github");
   github.textContent = data.github;
-
-  github.href =
-    "https://github.com/" + data.github.replace(/^@/, "");
-
+  github.href = "https://github.com/" + data.github.slice(1); // drop the @
 }
 
-
-/* Check whether registration information exists */
-
-const ticketData = loadTicket();
+var ticketData = loadTicket();
 
 if (ticketData !== null) {
-
   renderTicket(ticketData);
-
 } else {
-
-  window.location.replace("index.html");
-
+  // Visited without registering: go back to the form
+  window.location.href = "login.html";
 }
